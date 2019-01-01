@@ -1,46 +1,41 @@
-var hostname = 'm15.cloudmqtt.com';
-var port = 33544;
-var clientId = "webclient";
+var hostname = '192.168.1.8';
+var port = 1884;
+var clientId = "estufa";
 clientId += new Date().getUTCMilliseconds();;
-var username = "nmchqksg";
-var password = "Nj0i8q-SIa1N";
-var subscription1 = "light1st";
-var subscription2 = "light2st";
-var subscription3 = "temp";
+var subscribe1 = "sensor/umidade";
+var subscribe2 = "sensor/temperatura";
+var subscribe3 = "sensor/agua/temperatura";
+var subscribe4 = "sensor/agua/condutividade";
 
 mqttClient = new Paho.MQTT.Client(hostname, port, clientId);
 mqttClient.onMessageArrived =  MessageArrived;
 mqttClient.onConnectionLost = ConnectionLost;
-Connect();
 
-/*Initiates a connection to the MQTT broker*/
 function Connect(){
 	mqttClient.connect({
 		onSuccess: Connected,
 		onFailure: ConnectionFailed,
 		keepAliveInterval: 10,
-		userName: username,
 		useSSL: false,
-		password: password	
 	});
 }
 
-/*Callback for successful MQTT connection */
+Connect();
+
 function Connected() {
   console.log("Connected");
   console.log(mqttClient);
-  mqttClient.subscribe(subscription1);
-  mqttClient.subscribe(subscription2);
-  mqttClient.subscribe(subscription3);
 
+  mqttClient.subscribe(subscribe1);
+  mqttClient.subscribe(subscribe2);
+  mqttClient.subscribe(subscribe3);
+  mqttClient.subscribe(subscribe4);
 }
 
-/*Callback for failed connection*/
 function ConnectionFailed(res) {
 	console.log("Connect failed:" + res.errorMessage);
 }
 
-/*Callback for lost connection*/
 function ConnectionLost(res) {
   if (res.errorCode != 0) {
 	console.log("Connection lost:" + res.errorMessage);
@@ -48,11 +43,11 @@ function ConnectionLost(res) {
   }
 }
 
-/*Callback for incoming message processing */
 function MessageArrived(message) {
 	console.log(message.destinationName +" : " + message.payloadString);
-	switch(message.destinationName){
-		case "light1st":
+	adicionarDados(message.destinationName, message.payloadString);
+	//switch(message.destinationName){
+		/*case "light1st":
 			switch(message.payloadString){
 
 
@@ -89,42 +84,15 @@ function MessageArrived(message) {
 			break;
 		case "temp":
 			document.getElementById('tempdata').innerHTML = message.payloadString;
-			break;
-	}
+			break;*/
+	//}
 }
 
-window.onload=function(){
- 	document.getElementById('led1btn').addEventListener("click", led1btnf);
-	function led1btnf() {
-	    var cell = document.getElementById("led1btn");
-		switch (cell.innerHTML){
-			case "Turn on":
-				var message = new Paho.MQTT.Message("1");
-				message.destinationName = "light1";
-				mqttClient.send(message);
-				break;
-			case "Turn off":
-				var message = new Paho.MQTT.Message("0");
-				message.destinationName = "light1";
-				mqttClient.send(message);
-				break;
-		}
-	}
-	document.getElementById('led2btn').addEventListener("click", led2btnf);
-	function led2btnf() {
-	    
-	    var cell = document.getElementById("led2btn");
-		switch (cell.innerHTML){
-			case "Turn on":
-				var message = new Paho.MQTT.Message("1");
-				message.destinationName = "light2";
-				mqttClient.send(message);
-				break;
-			case "Turn off":
-				var message = new Paho.MQTT.Message("0");
-				message.destinationName = "light2";
-				mqttClient.send(message);
-				break;
-		}
-	}
+function adicionarDados(label, data) {
+    console.log('chamou a funcao');
+    this.lineCanvas.data.labels.push(label);
+    this.lineCanvas.data.datasets.forEach((dataset) => {
+        dataset.data.push(data);
+    });
+    this.lineCanvas.update();
 }

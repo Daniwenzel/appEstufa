@@ -1032,7 +1032,7 @@ var PahoMQTT = (function (global) {
 		// When the socket is open, this client will send the CONNECT WireMessage using the saved parameters.
 		if (this.connectOptions.useSSL) {
 		    var uriParts = wsurl.split(":");
-		    uriParts[0] = "wss";
+		    uriParts[0] = "ws";
 		    wsurl = uriParts.join(":");
 		}
 		this._wsuri = wsurl;
@@ -1993,7 +1993,7 @@ var PahoMQTT = (function (global) {
 						var port = connectOptions.ports[i];
 
 						var ipv6 = (host.indexOf(":") !== -1);
-						uri = "ws://"+(ipv6?"["+host+"]":host)+":"+port+path;
+						uri = "mqtt://"+(ipv6?"["+host+"]":host)+":"+port+path;
 						connectOptions.uris.push(uri);
 					}
 				} else {
