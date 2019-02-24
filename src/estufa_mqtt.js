@@ -1,15 +1,16 @@
-var hostname = '192.168.1.8';
-var port = 1884;
-var clientId = "estufa";
-clientId += new Date().getUTCMilliseconds();;
-var subscribe1 = "sensor/umidade";
-var subscribe2 = "sensor/temperatura";
-var subscribe3 = "sensor/agua/temperatura";
-var subscribe4 = "sensor/agua/condutividade";
+const hostname = '192.168.1.7';
+const port = 1884;
+let clientId = "estufa";
+clientId += new Date().getUTCMilliseconds();
+const subscribe1 = "sensor/umidade";
+const subscribe2 = "sensor/temperatura";
+const subscribe3 = "sensor/agua/temperatura";
+const subscribe4 = "sensor/agua/condutividade";
 
 mqttClient = new Paho.MQTT.Client(hostname, port, clientId);
 mqttClient.onMessageArrived =  MessageArrived;
 mqttClient.onConnectionLost = ConnectionLost;
+Connect();
 
 function Connect(){
 	mqttClient.connect({
@@ -19,8 +20,6 @@ function Connect(){
 		useSSL: false,
 	});
 }
-
-Connect();
 
 function Connected() {
   console.log("Connected");
@@ -45,7 +44,7 @@ function ConnectionLost(res) {
 
 function MessageArrived(message) {
 	console.log(message.destinationName +" : " + message.payloadString);
-	adicionarDados(message.destinationName, message.payloadString);
+	addData(message.destinationName, message.payloadString);
 	//switch(message.destinationName){
 		/*case "light1st":
 			switch(message.payloadString){
@@ -88,7 +87,7 @@ function MessageArrived(message) {
 	//}
 }
 
-function adicionarDados(label, data) {
+function addData(label, data) {
     console.log('chamou a funcao');
     this.lineCanvas.data.labels.push(label);
     this.lineCanvas.data.datasets.forEach((dataset) => {
